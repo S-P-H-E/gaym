@@ -1,32 +1,33 @@
 "use client"
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Progress } from 'antd';
 
-export default function Home() {
-  const [dayCount, setDayCount] = useState(1);
-  const [daysLeft, setDaysLeft] = useState(1);
-  const [progressPercentage, setProgressPercentage] = useState(1);
+const Home: React.FC = () => {
+  // State variables with types
+  const [dayCount, setDayCount] = useState<number>(1);
+  const [daysLeft, setDaysLeft] = useState<number>(1);
+  const [progressPercentage, setProgressPercentage] = useState<number>(1);
 
   useEffect(() => {
-    // Set the start date to 11th October 2023
+    // Set the start and end dates
     const startDate = new Date(2023, 9, 11); // Note: Month is 0-based, so 9 is October
     const endDate = new Date(2023, 9, 25); // Note: Month is 0-based, so 9 is October
     const currentDate = new Date();
 
     // Calculate the difference in days
-    const differenceInTime = currentDate - startDate;
-    const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
+    const differenceInTime: number = currentDate.getTime() - startDate.getTime();
+    const differenceInDays: number = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
 
     // Calculate the total duration and days left
-    const totalDuration = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
-    const remainingDays = totalDuration - differenceInDays;
+    const totalDuration: number = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const remainingDays: number = Math.max(0, totalDuration - differenceInDays); // Prevent negative values
 
-    // Calculate the progress percentage
-    const percentagePassed = ((totalDuration - remainingDays) / totalDuration) * 100;
+    // Calculate the progress percentage, ensuring it doesn't exceed 100%
+    const percentagePassed: number = Math.min(100, Math.max(0, ((differenceInDays / totalDuration) * 100)));
+
     setProgressPercentage(percentagePassed);
-
     setDayCount(differenceInDays + 1); // +1 because the start date is Day 1
-    setDaysLeft(remainingDays); // Update the days left state
+    setDaysLeft(remainingDays);
   }, []);
 
   return (
@@ -53,3 +54,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;
